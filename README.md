@@ -2,22 +2,22 @@
 
 > Privacy-first desktop tooling for importing, cleaning, tracking, and processing Instagram username lists locally.
 
-![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
-![PySide6](https://img.shields.io/badge/UI-PySide6-green)
-![Playwright](https://img.shields.io/badge/Browser-Playwright-orange)
-![License](https://img.shields.io/badge/License-MIT-purple)
+!\[Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+!\[PySide6](https://img.shields.io/badge/UI-PySide6-green)
+!\[Playwright](https://img.shields.io/badge/Browser-Playwright-orange)
+!\[License](https://img.shields.io/badge/License-MIT-purple)
 
 ## ✨ Features
 
-- 📥 TXT / CSV / JSON import
-- 🧹 Username normalization and deduplication
-- 🔎 Search and filtering
-- 🗃️ Local SQLite persistence
-- 📊 Status dashboard and progress tracking
-- 🟢 Pending / Blocked / Skipped / Failed states
-- 📤 CSV export
-- 🌐 Optional Playwright browser integration
-- 🔒 Local-first runtime data
+* 📥 TXT / CSV / JSON import
+* 🧹 Username normalization and deduplication
+* 🔎 Search and filtering
+* 🗃️ Local SQLite persistence
+* 📊 Status dashboard and progress tracking
+* 🟢 Pending / Blocked / Skipped / Failed states
+* 📤 CSV export
+* 🌐 Optional Playwright browser integration
+* 🔒 Local-first runtime data
 
 ## 🖥️ Screenshots
 
@@ -48,10 +48,12 @@ Browser integration
 ## 🚀 Setup
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/InstagramAccountManager.git
+git clone https://github.com/YOUR\_USERNAME/InstagramAccountManager.git
 cd InstagramAccountManager
 python -m pip install -r requirements.txt
 python -m playwright install chromium
+
+python start\_login.py
 python app.py
 ```
 
@@ -84,14 +86,14 @@ The application is designed to keep runtime data local.
 
 Never commit:
 
-- personal follower lists
-- `data/`
-- `exports/`
-- `chrome_profile/`
-- databases
-- cookies or browser storage
-- passwords, tokens, or API keys
-- screenshots containing private usernames
+* personal follower lists
+* `data/`
+* `exports/`
+* `chrome\_profile/`
+* databases
+* cookies or browser storage
+* passwords, tokens, or API keys
+* screenshots containing private usernames
 
 Before pushing:
 
@@ -115,14 +117,14 @@ python -m pytest
 
 ## 🛣️ Roadmap
 
-- [ ] Import preview
-- [ ] Background worker for long browser tasks
-- [ ] Pause / resume queue
-- [ ] Retry queue
-- [ ] Dark mode
-- [ ] Windows executable release
-- [ ] Broader automated test coverage
-- [ ] More accessibility-first selectors
+* \[ ] Import preview
+* \[ ] Background worker for long browser tasks
+* \[ ] Pause / resume queue
+* \[ ] Retry queue
+* \[ ] Dark mode
+* \[ ] Windows executable release
+* \[ ] Broader automated test coverage
+* \[ ] More accessibility-first selectors
 
 ## 🤝 Contributing
 
@@ -135,3 +137,4 @@ See [SECURITY.md](SECURITY.md).
 ## 📄 License
 
 MIT License — see [LICENSE](LICENSE).
+
