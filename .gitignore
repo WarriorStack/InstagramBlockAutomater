@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Runtime / personal data
+data/
+exports/
+*.db
+*.sqlite
+*.sqlite3
+chrome_profile/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Tests / builds
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
