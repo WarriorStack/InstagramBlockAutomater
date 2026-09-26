@@ -1,140 +1,140 @@
 # Instagram Account Manager
 
-> Privacy-first desktop tooling for importing, cleaning, tracking, and processing Instagram username lists locally.
+A desktop application built with **Python, PySide6, SQLite, and Playwright** for managing Instagram usernames through a graphical interface.
 
-!\[Python](https://img.shields.io/badge/Python-3.11%2B-blue)
-!\[PySide6](https://img.shields.io/badge/UI-PySide6-green)
-!\[Playwright](https://img.shields.io/badge/Browser-Playwright-orange)
-!\[License](https://img.shields.io/badge/License-MIT-purple)
+## Features
 
-## ✨ Features
+* Import usernames from TXT, CSV, and JSON files
+* Automatically clean usernames and remove duplicates
+* Local SQLite database for persistent data
+* Search usernames
+* Individual account processing
+* Process all pending users sequentially
+* Background processing using `QThread`
+* Pause / Resume processing
+* Stop batch processing
+* Progress bar and completion tracking
+* Status management:
 
-* 📥 TXT / CSV / JSON import
-* 🧹 Username normalization and deduplication
-* 🔎 Search and filtering
-* 🗃️ Local SQLite persistence
-* 📊 Status dashboard and progress tracking
-* 🟢 Pending / Blocked / Skipped / Failed states
-* 📤 CSV export
-* 🌐 Optional Playwright browser integration
-* 🔒 Local-first runtime data
+  * Pending
+  * Blocked
+  * Skipped
+  * Failed
+* Export account data to CSV
+* Separate processing status for different Instagram accounts
+* Persistent Chrome session through Playwright
 
-## 🖥️ Screenshots
+## Technology Stack
 
-Store screenshots in `assets/` only after removing personal usernames and other private data.
+* Python
+* PySide6
+* SQLite
+* Playwright
+* Chromium / Google Chrome
 
-Example:
+## Project Structure
 
 ```text
-assets/dashboard.png
+InstagramAccountManager/
+│
+├── app.py
+├── database.py
+├── instagram.py
+├── importer.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+│
+├── data/
+│
+└── chrome_profile/
 ```
 
-## 🏗️ Architecture
+## Installation
 
-```text
-TXT / CSV / JSON
-       ↓
-Importer
-       ↓
-Normalize + deduplicate
-       ↓
-SQLite
-       ↓
-PySide6 UI
-       ↓
-Browser integration
-```
-
-## 🚀 Setup
+Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR\_USERNAME/InstagramAccountManager.git
+git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd InstagramAccountManager
-python -m pip install -r requirements.txt
-python -m playwright install chromium
+```
 
-python start\_login.py
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Install Playwright browser support:
+
+```bash
+playwright install
+```
+
+Run the application:
+
+```bash
 python app.py
 ```
 
-## 📦 Supported formats
+## Processing Workflow
 
-TXT:
+1. Import usernames from TXT, CSV, or JSON.
+2. Select the Instagram account currently being used.
+3. Pending users are loaded for that account.
+4. Use **Process** for an individual username or **Process All** for sequential processing.
+5. Processing runs in a background thread so the GUI remains responsive.
+6. Results are stored in the SQLite database.
+7. Progress is displayed in the application.
+
+## Multi-Account Processing
+
+Processing status is maintained separately for each Instagram account.
+
+For example:
 
 ```text
-alice
-@bob
-charlie
+Account A
+    user123 → Blocked
+
+Account B
+    user123 → Pending
 ```
 
-CSV:
+This allows the same username to have an independent processing status for different Instagram accounts.
 
-```csv
-username
-alice
-bob
-charlie
+## Process Controls
+
+### Process All
+
+Processes Pending users sequentially.
+
+### Pause
+
+Temporarily pauses the batch before continuing with the next user.
+
+### Resume
+
+Continues a paused batch.
+
+### Stop
+
+Stops the batch after the current operation completes.
+
+## Database
+
+The application stores its local database under:
+
+```text
+data/instagram.db
 ```
 
-JSON:
+The local database should not be committed to Git.
 
-The importer recursively handles nested JSON and common username/value fields used by exported data.
+## Development
 
-## 🔐 Privacy
+This project is currently being developed as a self-learning project using Python desktop GUI development, SQLite database design, Playwright browser automation, multithreading, and Git version control.
 
-The application is designed to keep runtime data local.
+## License
 
-Never commit:
-
-* personal follower lists
-* `data/`
-* `exports/`
-* `chrome\_profile/`
-* databases
-* cookies or browser storage
-* passwords, tokens, or API keys
-* screenshots containing private usernames
-
-Before pushing:
-
-```bash
-git status
-git diff --cached
-```
-
-## ⚠️ Third-party platform disclaimer
-
-This is an independent project and is not affiliated with or endorsed by Instagram or Meta.
-
-Users are responsible for complying with the terms, policies, and applicable laws governing third-party platforms.
-
-## 🧪 Development
-
-```bash
-python -m compileall .
-python -m pytest
-```
-
-## 🛣️ Roadmap
-
-* \[ ] Import preview
-* \[ ] Background worker for long browser tasks
-* \[ ] Pause / resume queue
-* \[ ] Retry queue
-* \[ ] Dark mode
-* \[ ] Windows executable release
-* \[ ] Broader automated test coverage
-* \[ ] More accessibility-first selectors
-
-## 🤝 Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## 🛡️ Security
-
-See [SECURITY.md](SECURITY.md).
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE).
-
+Add your preferred license here.

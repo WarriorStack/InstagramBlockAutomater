@@ -1,5 +1,6 @@
 from pathlib import Path
 from urllib.parse import quote
+
 from playwright.sync_api import (
     sync_playwright,
     Error as PlaywrightError,
@@ -14,7 +15,7 @@ _page = None
 
 
 def _is_alive():
-    """Check whether our stored Playwright objects are still usable."""
+    """Check whether stored Playwright objects are still usable."""
     try:
         if _context is None:
             return False
@@ -64,117 +65,167 @@ def start_browser():
         raise
 
 
-def open_profile(username):
-    """Open a profile and then click the Options button."""
+def _process_profile(username):
+    """
+    Open profile and perform the existing block workflow.
+    Returns:
+        success
+        failed
+    """
+
     username = username.strip().lstrip("@").strip()
 
     if not username:
-        return
+        return "failed"
 
     url = f"https://www.instagram.com/{quote(username)}/"
 
-    try:
-        page = start_browser()
+    page = start_browser()
 
-        if page.is_closed():
-            page = start_browser()
+    # 1. Open profile
+    page.goto(
+        url,
+        wait_until="domcontentloaded",
+        timeout=60000,
+    )
 
-        # 1. Open profile
-        page.goto(
-            url,
-            wait_until="domcontentloaded",
-            timeout=60000,
-        )
+    # 2. Find Options button
+    options_button = page.get_by_role(
+        "button",
+        name="Options"
+    )
 
-        # 2. Find Options button
-        options_button = page.get_by_role(
-            "button",
-            name="Options"
-        )
+    options_button.wait_for(
+        state="visible",
+        timeout=15000
+    )
 
-        # 3. Wait for it
-        options_button.wait_for(
-            state="visible",
-            timeout=15000
-        )
+    options_button.click()
 
-        # 4. Click it
-        options_button.click()
+    # 3. Click Block
+    block_button = page.get_by_role(
+        "button",
+        name="Block"
+    )
+
+    block_button.wait_for(
+        state="visible",
+        timeout=15000
+    )
+
+    block_button.click()
+
+    # 4. Confirm Block
+    confirm_block_button = page.get_by_role(
+        "button",
+        name="Block"
+    )
+
+    confirm_block_button.wait_for(
+        state="visible",
+        timeout=15000
+    )
+
+    confirm_block_button.click()
+
+    # 5. Check confirmation dialog
+    dialog = page.get_by_role("dialog")
+
+    dialog.wait_for(
+        state="visible",
+        timeout=15000
+    )
+
+    popup_text = dialog.inner_text().lower()
+
+    print("POPUP TEXT:")
+    print(dialog.inner_text())
+
+    if "blocked" in popup_text:
+
+        print(f"SUCCESS: @{username}")
+
+        # Dismiss dialog if available
+        try:
+            dismiss_button = dialog.get_by_role(
+                "button",
+                name="Dismiss"
+            )
+
+            dismiss_button.click(
+                timeout=5000
+            )
+
+        except Exception:
+            pass
+
+        return "success"
+
+    print(f"FAILED: @{username}")
+
+    return "failed"
 
 
-        #5. Clicking on block Button
-        
-        block_button = page.get_by_role("button", name="Block")
-        block_button.wait_for(state="visible", timeout=15000)
-        block_button.click()
+def open_profile(username):
+    """
+    Process one Instagram profile.
+    Automatically retries once if Playwright fails.
+    Always returns success or failed.
+    """
 
-        # Confirming Block
-        block_button = page.get_by_role("button", name="Block")
-        block_button.wait_for(state="visible", timeout=15000)
-        block_button.click()
+    username = username.strip().lstrip("@").strip()
 
-  
-            # Wait for popup/dialog
-        dialog = page.get_by_role("dialog")
-        dialog.wait_for(state="visible", timeout=15000)
+    if not username:
+        return "failed"
 
-        # Print everything inside the popup
-        print("POPUP TEXT:")
-        print(dialog.inner_text())
-
-        # Check whether the popup contains the expected result
-        popup_text = dialog.inner_text().lower()
-
-        if "blocked" in popup_text:
-            print(f"SUCCESS: @{username}")
-            result = "success"
-        else:
-            print(f"FAILED: @{username}")
-            result = "failed"
-
-        # Dismiss after verification
-        dismiss_button = dialog.get_by_role("button", name="Dismiss")
-        dismiss_button.click()
-
-        close_browser()
-        return result
-
-
-    
-    except PlaywrightError as e:
-        print(f"Playwright error: {e}")
+    for attempt in range(2):
 
         try:
+
+            print(
+                f"Processing @{username} "
+                f"(attempt {attempt + 1}/2)"
+            )
+
+            result = _process_profile(username)
+
             close_browser()
 
-            page = start_browser()
+            return result
 
-            page.goto(
-                url,
-                wait_until="domcontentloaded",
-                timeout=60000,
+        except PlaywrightError as e:
+
+            print(
+                f"Playwright error for @{username}: {e}"
             )
 
-            options_button = page.get_by_role(
-                "button",
-                name="Options"
+            close_browser()
+
+            if attempt == 1:
+                print(
+                    f"FAILED after retry: @{username}"
+                )
+                return "failed"
+
+        except Exception as e:
+
+            print(
+                f"Unexpected error for @{username}: {e}"
             )
 
-            options_button.wait_for(
-                state="visible",
-                timeout=15000
-            )
+            close_browser()
 
-            options_button.click()
+            if attempt == 1:
+                print(
+                    f"FAILED after retry: @{username}"
+                )
+                return "failed"
 
-            print(f"Retry successful for @{username}")
-
-        except Exception as retry_error:
-            print(f"Retry failed: {retry_error}")
+    return "failed"
 
 
 def close_browser():
-    """Safely close the Playwright browser and session."""
+    """Safely close Playwright browser and session."""
     global _playwright, _context, _page
 
     try:
